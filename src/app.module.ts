@@ -16,8 +16,8 @@ import { configSchema } from './config.schema';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const isProd = configService.get('STAGE') === 'prod';
-        const databaseUrl = configService.get('DATABASE_URL');
+        const isProd = configService.get<string>('STAGE') === 'prod';
+        const databaseUrl = configService.get<string>('DATABASE_URL');
         const base = {
           type: 'postgres' as const,
           autoLoadEntities: true,
@@ -29,11 +29,11 @@ import { configSchema } from './config.schema';
         }
         return {
           ...base,
-          host: configService.get('DB_HOST'),
+          host: configService.get<string>('DB_HOST'),
           port: configService.get<number>('DB_PORT'),
-          username: configService.get('DB_USERNAME'),
-          password: configService.get('DB_PASSWORD'),
-          database: configService.get('DB_DATABASE'),
+          username: configService.get<string>('DB_USERNAME'),
+          password: configService.get<string>('DB_PASSWORD'),
+          database: configService.get<string>('DB_DATABASE'),
         };
       },
     }),
