@@ -17,16 +17,23 @@ import { configSchema } from './config.schema';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const isProd = configService.get('STAGE') === 'prod';
-        return {
-          type: 'postgres',
+        const databaseUrl = configService.get('DATABASE_URL');
+        const base = {
+          type: 'postgres' as const,
           autoLoadEntities: true,
           synchronize: true,
+          ...(isProd && { ssl: { rejectUnauthorized: false } }),
+        };
+        if (databaseUrl) {
+          return { ...base, url: databaseUrl };
+        }
+        return {
+          ...base,
           host: configService.get('DB_HOST'),
           port: configService.get<number>('DB_PORT'),
           username: configService.get('DB_USERNAME'),
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_DATABASE'),
-          ...(isProd && { ssl: { rejectUnauthorized: false } }),
         };
       },
     }),
